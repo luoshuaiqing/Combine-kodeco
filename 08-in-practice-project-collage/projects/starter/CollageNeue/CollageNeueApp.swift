@@ -31,9 +31,14 @@
 /// THE SOFTWARE.
 
 import SwiftUI
+import Combine
 
 @main
 struct CollageNeueApp: App {
+  
+  private var subscriptions = Set<AnyCancellable>()
+  private let images = CurrentValueSubject<[UIImage], Never>([])
+  
   var body: some Scene {
     WindowGroup {
       MainView().environmentObject(CollageNeueModel())
