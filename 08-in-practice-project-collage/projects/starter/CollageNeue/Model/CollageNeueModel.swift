@@ -44,9 +44,14 @@ class CollageNeueModel: ObservableObject {
   private var subscriptions = Set<AnyCancellable>()
   private let images = CurrentValueSubject<[UIImage], Never>([])
   @Published var imagePreview: UIImage?
+  let updateUISubject = PassthroughSubject<Int, Never>()
+  private(set) var selectedPhotosSubject = PassthroughSubject<UIImage, Never>()
 
   func bindMainView() {
     images
+      .handleEvents(receiveOutput: { [weak self] photos in
+        self?.updateUISubject.send(photos.count)
+      })
       .map { photos in
         UIImage.collage(images: photos, size: Self.collageSize)
       }
@@ -54,7 +59,14 @@ class CollageNeueModel: ObservableObject {
   }
 
   func add() {
-    images.value.append(UIImage(named: "IMG_1907")!)
+    selectedPhotosSubject = PassthroughSubject<UIImage, Never>()
+    let newPhotos = selectedPhotosSubject
+    
+    newPhotos.map { [unowned self] newImage in
+      self.images.value + [newImage]
+    }
+    .assign(to: \.value, on: images)
+    .store(in: &subscriptions)
   }
 
   func clear() {
@@ -62,7 +74,20 @@ class CollageNeueModel: ObservableObject {
   }
 
   func save() {
-    
+    DispatchQueue.global().async { [unowned self] in
+      guard let image = imagePreview else { return }
+      PhotoWriter
+        .save(image)
+        .sink { [unowned self] completion in
+          if case let .failure(error) = completion {
+            lastErrorMessage = error.localizedDescription
+          }
+          clear()
+        } receiveValue: { [unowned self] id in
+          lastSavedPhotoID = id
+        }
+        .store(in: &subscriptions)
+    }
   }
   
   // MARK: -  Displaying photos picker
@@ -105,7 +130,7 @@ class CollageNeueModel: ObservableObject {
         return
       }
       
-      // Send the selected image
+      self.selectedPhotosSubject.send(image)
     }
   }
 }
