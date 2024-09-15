@@ -81,13 +81,16 @@ struct PhotosView: View {
     })
     .onAppear {
       // Check for Photos access authorization and reload the list if authorized.
-      PHPhotoLibrary.fetchAuthorizationStatus { status in
-        if status {
-          DispatchQueue.main.async {
+      PHPhotoLibrary.isAuthorized
+        .receive(on: DispatchQueue.main)
+        .sink { isAuthorized in
+          if isAuthorized {
             self.photos = model.loadPhotos()
+          } else {
+            isDisplayingError = true
           }
         }
-      }
+        .store(in: &subscriptions)
       
       model.bindPhotoPicker()
     }

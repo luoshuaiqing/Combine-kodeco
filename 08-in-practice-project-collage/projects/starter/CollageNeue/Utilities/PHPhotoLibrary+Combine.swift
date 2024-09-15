@@ -35,6 +35,14 @@ import Photos
 import Combine
 
 extension PHPhotoLibrary {
+  
+  static var isAuthorized: Future<Bool, Never> = {
+    Future { promise in
+      fetchAuthorizationStatus { isAuthorized in
+        promise(.success(isAuthorized))
+      }
+    }
+  }()
 
   static func fetchAuthorizationStatus(callback: @escaping (Bool) -> Void) {
     // Fetch the current status.
