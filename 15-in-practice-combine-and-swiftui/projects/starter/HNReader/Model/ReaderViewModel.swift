@@ -55,6 +55,17 @@ class ReaderViewModel {
     var error: API.Error? = nil
     
     func fetchStories() {
-        
+        api
+            .stories()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                if case let .failure(error) = completion {
+                    self.error = error
+                }
+            } receiveValue: { stories in
+                self.allStories = stories
+                self.error = nil
+            }
+            .store(in: &subscriptions)
     }
 }
