@@ -33,13 +33,9 @@
 import Foundation
 import Combine
 
-class ReaderViewModel {
+@Observable class ReaderViewModel {
     private let api = API()
-    private var allStories = [Story]() {
-        didSet {
-            print(allStories.count)
-        }
-    }
+    private var allStories = [Story]()
     private var subscriptions = Set<AnyCancellable>()
     
     var filter = [String]()

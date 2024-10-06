@@ -33,7 +33,7 @@
 import SwiftUI
 
 struct ReaderView: View {
-    var model: ReaderViewModel
+    @Bindable var model: ReaderViewModel
     @State var presentingSettingsSheet = false
     
     var currentDate = Date()
