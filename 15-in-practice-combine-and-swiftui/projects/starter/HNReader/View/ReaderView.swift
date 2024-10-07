@@ -47,7 +47,7 @@ struct ReaderView: View {
     }
     
     var body: some View {
-        let filter = "Showing all stories"
+        let filter = !model.filter.isEmpty ? "Filter: \(model.filter.map{$0}.joined(separator: ","))" : "Showing all stories"
         
         return NavigationView {
             List {
