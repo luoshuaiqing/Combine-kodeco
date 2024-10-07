@@ -31,12 +31,15 @@
 /// THE SOFTWARE.
 
 import SwiftUI
+import Combine
 
 struct ReaderView: View {
     @Bindable var model: ReaderViewModel
     @State var presentingSettingsSheet = false
     
-    var currentDate = Date()
+    @State var currentDate = Date()
+    
+    private let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect().eraseToAnyPublisher()
     
     init(model: ReaderViewModel) {
         self.model = model
@@ -56,7 +59,7 @@ struct ReaderView: View {
                                 .frame(minHeight: 0, maxHeight: 100)
                                 .font(.title)
                             
-                            PostedBy(time: story.time, user: story.by, currentDate: self.currentDate)
+                            PostedBy(time: story.time, user: story.by, currentDate: currentDate)
                             
                             Button(story.url) {
                                 print(story)
@@ -67,7 +70,9 @@ struct ReaderView: View {
                         }
                         .padding()
                     }
-                    // Add timer here
+                    .onReceive(timer, perform: {
+                        currentDate = $0
+                    })
                 }.padding()
             }
             .listStyle(PlainListStyle())
@@ -81,7 +86,7 @@ struct ReaderView: View {
             .navigationBarItems(trailing:
                                     Button("Settings") {
                 // Set presentingSettingsSheet to true here
-                self.presentingSettingsSheet = true
+                presentingSettingsSheet = true
             }
             )
         }
