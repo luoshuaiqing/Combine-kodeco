@@ -36,6 +36,7 @@ import Combine
 struct ReaderView: View {
     @Bindable var model: ReaderViewModel
     @State var presentingSettingsSheet = false
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     
     @State var currentDate = Date()
     
@@ -65,7 +66,7 @@ struct ReaderView: View {
                                 print(story)
                             }
                             .font(.subheadline)
-                            .foregroundColor(Color.blue)
+                            .foregroundColor(colorScheme == .light ? .blue : .orange)
                             .padding(.top, 6)
                         }
                         .padding()

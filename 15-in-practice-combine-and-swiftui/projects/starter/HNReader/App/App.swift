@@ -45,6 +45,7 @@ struct HNReader: App {
                 .onAppear {
                     viewModel.fetchStories()
                 }
+                .environmentObject(userSettings)
         }
     }
     
