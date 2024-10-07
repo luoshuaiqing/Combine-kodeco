@@ -31,9 +31,10 @@
 /// THE SOFTWARE.
 
 import Foundation
+import Combine
 
 final class Settings {
-  init() { }
-  
-  var keywords = [FilterKeyword]()
+    init() { }
+    
+    @Published var keywords = [FilterKeyword]()
 }
