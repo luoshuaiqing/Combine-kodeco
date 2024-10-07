@@ -42,6 +42,16 @@ example(of: "Joke API") {
                 .dataTaskPublisher(for: request)
                 .map(\.data)
                 .decode(type: Joke.self, decoder: JSONDecoder())
+                .mapError({ error -> DadJokes.Error in
+                    switch error {
+                    case is URLError:
+                        return .network
+                    case is DecodingError:
+                        return .parsing
+                    default:
+                        return .unknown
+                    }
+                })
                 .eraseToAnyPublisher()
         }
     }
