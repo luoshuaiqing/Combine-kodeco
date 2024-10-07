@@ -40,9 +40,19 @@ example(of: "Joke API") {
             
             return URLSession.shared
                 .dataTaskPublisher(for: request)
-                .map(\.data)
+                .tryMap({ data, _ in
+                    if let obj = try? JSONSerialization.jsonObject(with: data),
+                          let dict = obj as? [String: Any],
+                          dict["status"] as? Int == 404 {
+                        throw DadJokes.Error.jokeDoesntExist(id: id)
+                    }
+                    return data
+                })
                 .decode(type: Joke.self, decoder: JSONDecoder())
                 .mapError({ error -> DadJokes.Error in
+                    if let error = error as? DadJokes.Error {
+                        return error
+                    }
                     switch error {
                     case is URLError:
                         return .network
