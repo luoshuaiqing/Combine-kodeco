@@ -4,7 +4,61 @@ import Combine
 
 var subscriptions = Set<AnyCancellable>()
 //: ## Designing your fallible APIs
-<#Add your code here#>
+example(of: "Joke API") {
+    class DadJokes {
+        struct Joke: Codable {
+            let id: String
+            let joke: String
+        }
+        
+        enum Error: Swift.Error, CustomStringConvertible {
+            // 1
+            case network
+            case jokeDoesntExist(id: String)
+            case parsing
+            case unknown
+            
+            // 2
+            var description: String {
+                switch self {
+                case .network:
+                    return "Request to API Server failed"
+                case .parsing:
+                    return "Failed parsing response from server"
+                case .jokeDoesntExist(let id):
+                    return "Joke with ID \(id) doesn't exist"
+                case .unknown:
+                    return "An unknown error occurred"
+                }
+            }
+        }
+        
+        func getJoke(id: String) -> AnyPublisher<Joke, Error> {
+            let url = URL(string: "https://icanhazdadjoke.com/j/\(id)")!
+            var request = URLRequest(url: url)
+            request.allHTTPHeaderFields = ["Accept": "application/json"]
+            
+            return URLSession.shared
+                .dataTaskPublisher(for: request)
+                .map(\.data)
+                .decode(type: Joke.self, decoder: JSONDecoder())
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    let api = DadJokes()
+    let jokeID = "9prWnjyImyd"
+    let badJokeID = "123456"
+    
+    api
+        .getJoke(id: jokeID)
+        .sink(receiveCompletion: {
+            print($0)
+        }) {
+            print("Got joke: \($0)")
+        }
+        .store(in: &subscriptions)
+}
 //: [Next](@next)
 
 /// Copyright (c) 2023 Kodeco Inc.
