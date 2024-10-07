@@ -34,7 +34,15 @@ import Foundation
 import Combine
 
 final class Settings: ObservableObject {
-    init() { }
+    init() { 
+        if let keywords: [FilterKeyword] = try? JSONFile.loadValue(named: "filterKeywords") {
+            self.keywords = keywords
+        }
+    }
     
-    @Published var keywords = [FilterKeyword]()
+    @Published var keywords = [FilterKeyword]() {
+        didSet {
+            try? JSONFile.save(value: keywords, named: "filterKeywords")
+        }
+    }
 }
