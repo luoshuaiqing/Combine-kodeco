@@ -4,7 +4,28 @@ import Combine
 
 var subscriptions = Set<AnyCancellable>()
 //: ## try* operators
-<#Add your code here#>
+example(of: "tryMap") {
+    enum NameError: Error {
+        case tooShort(String)
+        case unknown
+    }
+    
+    let names = ["Marin", "Shai", "Florent"].publisher
+    names
+        .tryMap { value in
+            let length = value.count
+            guard length >= 5 else {
+                throw NameError.tooShort(value)
+            }
+            return value.count
+        }
+        .sink {
+            print("Completed with \($0)")
+        } receiveValue: {
+            print("Got value: \($0)")
+        }
+
+}
 //: [Next](@next)
 
 /// Copyright (c) 2023 Kodeco Inc.
