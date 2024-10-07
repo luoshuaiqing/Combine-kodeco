@@ -34,6 +34,10 @@ example(of: "Joke API") {
         }
         
         func getJoke(id: String) -> AnyPublisher<Joke, Error> {
+            guard id.rangeOfCharacter(from: .letters) != nil else {
+                return Fail(error: .jokeDoesntExist(id: id)).eraseToAnyPublisher()
+            }
+            
             let url = URL(string: "https://icanhazdadjoke.com/j/\(id)")!
             var request = URLRequest(url: url)
             request.allHTTPHeaderFields = ["Accept": "application/json"]
@@ -68,10 +72,10 @@ example(of: "Joke API") {
     
     let api = DadJokes()
     let jokeID = "9prWnjyImyd"
-    let badJokeID = "123456"
+    let badJokeID = "123456a"
     
     api
-        .getJoke(id: jokeID)
+        .getJoke(id: badJokeID)
         .sink(receiveCompletion: {
             print($0)
         }) {
