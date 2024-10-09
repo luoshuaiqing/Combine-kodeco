@@ -75,7 +75,7 @@ example(of: "Joke API") {
     let badJokeID = "123456a"
     
     api
-        .getJoke(id: badJokeID)
+        .getJoke(id: jokeID)
         .sink(receiveCompletion: {
             print($0)
         }) {
