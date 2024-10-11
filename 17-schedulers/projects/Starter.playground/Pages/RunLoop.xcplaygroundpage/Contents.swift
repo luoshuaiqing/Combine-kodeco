@@ -7,7 +7,17 @@ let source = Timer
   .autoconnect()
   .scan(0) { (counter, _) in counter + 1 }
 
-<# Add code here #>
+let setupPublisher = { recorder in
+    source
+        .receive(on: DispatchQueue.global())
+        .recordThread(using: recorder)
+        .receive(on: RunLoop.current)
+        .recordThread(using: recorder)
+        .eraseToAnyPublisher()
+}
+
+let view = ThreadRecorderView(title: "Using RunLoop", setup: setupPublisher)
+PlaygroundPage.current.liveView = UIHostingController(rootView: view)
 
 //: [Next](@next)
 /*:
