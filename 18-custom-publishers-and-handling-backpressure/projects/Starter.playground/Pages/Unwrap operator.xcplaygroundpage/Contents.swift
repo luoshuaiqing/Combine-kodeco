@@ -1,6 +1,10 @@
 import Combine
 
-<#Add your code here#>
+extension Publisher {
+    func unwrap<T>() -> Publishers.CompactMap<Self, T> where Output == Optional<T> {
+        compactMap { $0 }
+    }
+}
 
 //: [Next](@next)
 /*:
