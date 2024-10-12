@@ -14,7 +14,19 @@ example(of: "Catching and retrying") {
             guard case .failure(let error) = $0 else { return }
             print("Got error: \(error)")
         })
+        .catch({ error in
+//            print("Failed fetching high quality, falling back to low quality")
+            return photoService
+                .fetchPhoto(quality: .high)
+                .handleEvents(receiveSubscription: { _ in
+                    print("Trying 2...")
+                }, receiveCompletion: {
+                    guard case .failure(let error) = $0 else { return }
+                    print("Got error 2: \(error)")
+                })
+        })
         .retry(3)
+//        .replaceError(with: UIImage(named: "na.jpg")!)
         .sink {
             print($0)
         } receiveValue: { image in
