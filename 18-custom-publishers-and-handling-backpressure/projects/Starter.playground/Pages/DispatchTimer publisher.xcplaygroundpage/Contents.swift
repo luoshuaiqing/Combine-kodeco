@@ -5,6 +5,7 @@ struct DispatchTimerConfiguration {
     let queue: DispatchQueue?
     let interval: DispatchTimeInterval
     let leeway: DispatchTimeInterval
+    // Max # of values the subscriber wants to receive
     let times: Subscribers.Demand
 }
 
@@ -27,7 +28,45 @@ extension Publishers {
 }
 
 private final class DispatchTimerSubscription<S: Subscriber>: Subscription where S.Input == DispatchTime {
+    let configuration: DispatchTimerConfiguration
+    var times: Subscribers.Demand
+    var requested: Subscribers.Demand = .none
+    var source: DispatchSourceTimer? = nil
+    var subscriber: S?
     
+    init(subscriber: S, configuration: DispatchTimerConfiguration) {
+        self.configuration = configuration
+        self.subscriber = subscriber
+        self.times = configuration.times
+    }
+    
+    func cancel() {
+        source = nil
+        subscriber = nil
+    }
+    
+    func request(_ demand: Subscribers.Demand) {
+        guard times > .none else {
+            subscriber?.receive(completion: .finished)
+            return
+        }
+        
+        requested += demand
+        if source == nil, requested > .none {
+            let source = DispatchSource.makeTimerSource(queue: configuration.queue)
+            source.schedule(deadline: .now() + configuration.interval, repeating: configuration.interval, leeway: configuration.leeway)
+            
+            source.setEventHandler { [weak self] in
+                guard let self, requested > .none else { return }
+                requested -= .max(1)
+                times -= .max(1)
+                subscriber?.receive(.now())
+                if times == .none {
+                    subscriber?.receive(completion: .finished)
+                }
+            }
+        }
+    }
 }
 
 //: [Next](@next)
