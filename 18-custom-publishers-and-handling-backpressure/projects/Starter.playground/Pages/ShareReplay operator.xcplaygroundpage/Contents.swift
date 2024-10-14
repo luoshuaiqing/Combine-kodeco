@@ -86,7 +86,6 @@ extension Publishers {
             self.capacity = capacity
         }
         
-        // todo: what's this?
         private func relay(_ value: Output) {
             lock.lock()
             defer { lock.unlock() }
@@ -118,6 +117,18 @@ extension Publishers {
             let subscription = ShareReplaySubscription(subscriber: subscriber, replay: replay, capacity: capacity, completion: completion)
             subscriptions.append(subscription)
             subscriber.receive(subscription: subscription)
+            
+            guard subscriptions.count == 1 else { return }
+            
+            let sink = AnySubscriber { subscription in
+                subscription.request(.unlimited)
+            } receiveValue: { [weak self] value in
+                self?.relay(value)
+                return .none
+            } receiveCompletion: { [weak self] completion in
+                self?.complete(completion)
+            }
+
         }
     }
 }
