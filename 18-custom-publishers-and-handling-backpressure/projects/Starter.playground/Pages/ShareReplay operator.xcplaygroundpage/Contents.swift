@@ -66,7 +66,7 @@ fileprivate final class ShareReplaySubscription<Output, Failure: Error>: Subscri
         guard let subscriber else { return }
         self.subscriber = nil
         // We don't set completion to nil here because we know it must already be nil, otherwise this method won't be called.
-        assert(completion == nil)
+        assert(self.completion == nil)
         self.buffer.removeAll()
         subscriber.receive(completion: completion)
     }
@@ -138,3 +138,71 @@ extension Publishers {
         }
     }
 }
+
+extension Publisher {
+    func shareReplay(capacity: Int = .max) -> Publishers.ShareReplay<Self> {
+        Publishers.ShareReplay(upstream: self, capacity: capacity)
+    }
+}
+
+// =============== Testing ===============
+var logger = TimeLogger(sinceOrigin: true)
+let subject = PassthroughSubject<Int,Never>()
+let publisher = subject.shareReplay(capacity: 2)
+subject.send(0) // Note: This value is never emitted, because it is before the first subscriber subscribed to the shared publisher.
+
+let subscription1 = publisher.sink(
+  receiveCompletion: {
+    print("subscription1 completed: \($0)", to: &logger)
+  },
+  receiveValue: {
+    print("subscription1 received \($0)", to: &logger)
+  }
+)
+
+subject.send(1)
+subject.send(2)
+subject.send(3)
+
+let subscription2 = publisher.sink(
+  receiveCompletion: {
+    print("subscription2 completed: \($0)", to: &logger)
+  },
+  receiveValue: {
+    print("subscription2 received \($0)", to: &logger)
+  }
+)
+
+subject.send(4)
+subject.send(5)
+subject.send(completion: .finished)
+
+var subscription3: Cancellable? = nil
+
+DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+  print("Subscribing to shareReplay after upstream completed")
+  subscription3 = publisher.sink(
+    receiveCompletion: {
+      print("subscription3 completed: \($0)", to: &logger)
+    },
+    receiveValue: {
+      print("subscription3 received \($0)", to: &logger)
+    }
+  )
+}
+
+// +0.02967s: subscription1 received 1
+// +0.03092s: subscription1 received 2
+// +0.03189s: subscription1 received 3
+// +0.03309s: subscription2 received 2
+// +0.03317s: subscription2 received 3
+// +0.03371s: subscription1 received 4
+// +0.03401s: subscription2 received 4
+// +0.03515s: subscription1 received 5
+// +0.03548s: subscription2 received 5
+// +0.03716s: subscription1 completed: finished
+// +0.03746s: subscription2 completed: finished
+// Subscribing to shareReplay after upstream completed
+// +1.12007s: subscription3 received 4
+// +1.12015s: subscription3 received 5
+// +1.12057s: subscription3 completed: finished
