@@ -129,6 +129,7 @@ extension Publishers {
                 self?.complete(completion)
             }
 
+            upstream.subscribe(sink)
         }
     }
 }
