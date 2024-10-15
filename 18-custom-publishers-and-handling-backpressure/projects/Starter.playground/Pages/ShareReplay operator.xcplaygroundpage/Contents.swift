@@ -34,6 +34,8 @@ fileprivate final class ShareReplaySubscription<Output, Failure: Error>: Subscri
                 self.demand += nextDemand
             }
         }
+        // completion will be nil if the current suibscription didn't receive a completion event at time of subscription. 
+        // For such subscriptions, receive(completion:) will be called to trigger the completion.
         if let completion {
             complete(with: completion)
         }
@@ -50,7 +52,6 @@ fileprivate final class ShareReplaySubscription<Output, Failure: Error>: Subscri
         complete(with: .finished)
     }
     
-    // todo: what's this?
     func receive(_ input: Output) {
         guard subscriber != nil else { return }
         buffer.append(input)
@@ -60,10 +61,12 @@ fileprivate final class ShareReplaySubscription<Output, Failure: Error>: Subscri
         emitAsNeeded()
     }
     
-    // todo: what's this?
+    // This method is called if the current subscription didn't receive a completion event at time of subscription.
     func receive(completion: Subscribers.Completion<Failure>) {
         guard let subscriber else { return }
         self.subscriber = nil
+        // We don't set completion to nil here because we know it must already be nil, otherwise this method won't be called.
+        assert(completion == nil)
         self.buffer.removeAll()
         subscriber.receive(completion: completion)
     }
@@ -92,6 +95,8 @@ extension Publishers {
             
             guard completion == nil else { return }
             
+            // We add the value to replay as well as "$0.receive(value)".
+            // replay is for new subscriptions to receive the value upon subscribing, while "$0.receive(value)" is for existing subscriptions to receive the value.
             replay.append(value)
             if replay.count > capacity {
                 replay.removeFirst()
