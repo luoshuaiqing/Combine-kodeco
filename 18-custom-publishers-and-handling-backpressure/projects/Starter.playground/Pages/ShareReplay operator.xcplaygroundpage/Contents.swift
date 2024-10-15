@@ -148,7 +148,7 @@ extension Publisher {
 // =============== Testing ===============
 var logger = TimeLogger(sinceOrigin: true)
 let subject = PassthroughSubject<Int,Never>()
-let publisher = subject.shareReplay(capacity: 2)
+let publisher = subject.print("shareReplay").shareReplay(capacity: 2)
 subject.send(0) // Note: This value is never emitted, because it is before the first subscriber subscribed to the shared publisher.
 
 let subscription1 = publisher.sink(
@@ -191,18 +191,26 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
   )
 }
 
-// +0.02967s: subscription1 received 1
-// +0.03092s: subscription1 received 2
-// +0.03189s: subscription1 received 3
-// +0.03309s: subscription2 received 2
-// +0.03317s: subscription2 received 3
-// +0.03371s: subscription1 received 4
-// +0.03401s: subscription2 received 4
-// +0.03515s: subscription1 received 5
-// +0.03548s: subscription2 received 5
-// +0.03716s: subscription1 completed: finished
-// +0.03746s: subscription2 completed: finished
+// shareReplay: receive subscription: (PassthroughSubject)
+// shareReplay: request unlimited
+// shareReplay: receive value: (1)
+// +0.04967s: subscription1 received 1
+// shareReplay: receive value: (2)
+// +0.05103s: subscription1 received 2
+// shareReplay: receive value: (3)
+// +0.05164s: subscription1 received 3
+// +0.05246s: subscription2 received 2
+// +0.05250s: subscription2 received 3
+// shareReplay: receive value: (4)
+// +0.05277s: subscription1 received 4
+// +0.05290s: subscription2 received 4
+// shareReplay: receive value: (5)
+// +0.05353s: subscription1 received 5
+// +0.05364s: subscription2 received 5
+// shareReplay: receive finished
+// +0.05545s: subscription1 completed: finished
+// +0.05554s: subscription2 completed: finished
 // Subscribing to shareReplay after upstream completed
-// +1.12007s: subscription3 received 4
-// +1.12015s: subscription3 received 5
-// +1.12057s: subscription3 completed: finished
+// +1.10883s: subscription3 received 4
+// +1.10901s: subscription3 received 5
+// +1.10949s: subscription3 completed: finished
