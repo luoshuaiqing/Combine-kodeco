@@ -16,7 +16,7 @@ final class PausableSubscriber<Input, Failure: Error>: Subscriber, Pausable, Can
     private var subscription: Subscription? = nil
     var paused = false
     
-    init(receiveValue: @escaping (Input) -> Bool, receiveCompletion: @escaping (Subscribers.Completion<Error>) -> Void) {
+    init(receiveValue: @escaping (Input) -> Bool, receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void) {
         self.receiveValue = receiveValue
         self.receiveCompletion = receiveCompletion
     }
@@ -24,5 +24,26 @@ final class PausableSubscriber<Input, Failure: Error>: Subscriber, Pausable, Can
     func cancel() {
         subscription?.cancel()
         subscription = nil
+    }
+    
+    func receive(subscription: any Subscription) {
+        self.subscription = subscription
+        subscription.request(.max(1))
+    }
+    
+    func receive(_ input: Input) -> Subscribers.Demand {
+        paused = receiveValue(input) == false
+        return paused ? .none : .max(1)
+    }
+    
+    func receive(completion: Subscribers.Completion<Failure>) {
+        receiveCompletion(completion)
+        subscription = nil
+    }
+    
+    func resume() {
+        guard paused else { return }
+        paused = false
+        subscription?.request(.max(1))
     }
 }
