@@ -47,3 +47,47 @@ final class PausableSubscriber<Input, Failure: Error>: Subscriber, Pausable, Can
         subscription?.request(.max(1))
     }
 }
+
+extension Publisher {
+    func pausableSink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void, receiveValue: @escaping (Output) -> Bool) -> Pausable & Cancellable {
+        let pausable = PausableSubscriber(receiveValue: receiveValue, receiveCompletion: receiveCompletion)
+        subscribe(pausable)
+        return pausable
+    }
+}
+
+// =============== Testing ===============
+let subscription = [1, 2, 3, 4, 5, 6]
+    .publisher
+    .pausableSink { completion in
+        print("Pausable subscription completed: \(completion)")
+    } receiveValue: { value in
+        print("Receive value: \(value)")
+        if value % 2 == 1 {
+            print("Pausing")
+            return false
+        }
+        return true
+    }
+
+let timer = Timer.publish(every: 1, on: .main, in: .common)
+    .autoconnect()
+    .sink { _ in
+        guard subscription.paused else { return }
+        print("Subscription is paused, resuming")
+        subscription.resume()
+    }
+
+// Receive value: 1
+// Pausing
+// Subscription is paused, resuming
+// Receive value: 2
+// Receive value: 3
+// Pausing
+// Subscription is paused, resuming
+// Receive value: 4
+// Receive value: 5
+// Pausing
+// Subscription is paused, resuming
+// Receive value: 6
+// Pausable subscription completed: finished
