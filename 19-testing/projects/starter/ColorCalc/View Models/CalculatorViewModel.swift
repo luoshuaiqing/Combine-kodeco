@@ -72,7 +72,7 @@ final class CalculatorViewModel: ObservableObject {
             break
         case Constant.backspace:
             if hexText.count > 1 {
-                hexText.removeLast(2)
+                hexText.removeLast()
             }
         case _ where hexText.count < 9:
             hexText += input
