@@ -34,8 +34,25 @@ import XCTest
 import Combine
 
 class CombineOperatorsTests: XCTestCase {
-  
-  override func tearDown() {
     
-  }
+    var subscriptions = Set<AnyCancellable>()
+    
+    override func tearDown() {
+        subscriptions = []
+    }
+    
+    func test_collect() {
+        // Given
+        let values = [0, 1, 2]
+        let publisher = values.publisher
+        
+        // When
+        publisher
+            .collect()
+            .sink { 
+                XCTAssert($0 == values, "Result was expected to be \(values) but was \($0)")
+            }
+            .store(in: &subscriptions)
+    }
+    
 }
