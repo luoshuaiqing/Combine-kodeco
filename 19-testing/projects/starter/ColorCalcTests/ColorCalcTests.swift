@@ -36,12 +36,30 @@ import SwiftUI
 @testable import ColorCalc
 
 class ColorCalcTests: XCTestCase {
-  
-  override func setUp() {
     
-  }
-  
-  override func tearDown() {
+    var viewModel: CalculatorViewModel!
+    var subscriptions = Set<AnyCancellable>()
     
-  }
+    override func setUp() {
+        viewModel = CalculatorViewModel()
+    }
+    
+    override func tearDown() {
+        subscriptions = []
+    }
+    
+    func test_correctNameReceived() {
+        let expected = "rwGreen 66%"
+        var result = ""
+        
+        viewModel.$name
+            .sink {
+                result = $0
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.hexText = "006636AA"
+        
+        XCTAssert(result == expected)
+    }
 }
