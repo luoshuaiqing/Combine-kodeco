@@ -91,7 +91,36 @@ class CombineOperatorsTests: XCTestCase {
             results == expected,
             "Results expected to be \(expected) but were \(results)"
         )
+    }
+    
+    func test_timerPublish() {
+        // Given
+        func normalized(_ ti: TimeInterval) -> TimeInterval {
+            Double(round(ti * 10) / 10)
+        }
         
+        let now = Date().timeIntervalSinceReferenceDate
+        let expectation = self.expectation(description: #function)
+        let expected = [0.5, 1, 1.5]
+        var results = [TimeInterval]()
+        
+        let publisher = Timer
+            .publish(every: 0.5, on: .main, in: .common)
+            .autoconnect()
+            .prefix(3)
+        
+        // When
+        publisher
+            .sink { _ in
+                expectation.fulfill()
+            } receiveValue: {
+                results.append(normalized($0.timeIntervalSinceReferenceDate - now))
+            }
+            .store(in: &subscriptions)
+        
+        // Then
+        waitForExpectations(timeout: 2, handler: nil)
+        XCTAssert(results == expected, "Results expected to be \(expected) but were \(results)")
     }
     
 }
