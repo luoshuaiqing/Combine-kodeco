@@ -108,4 +108,18 @@ class ColorCalcTests: XCTestCase {
         
         XCTAssert(result == expected)
     }
+    
+    func test_whiteColorReceivedForBadData() {
+        let expected = Color.white
+        var result = Color.clear
+        viewModel.$color
+            .sink {
+                result = $0
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.hexText = "abc"
+        
+        XCTAssert(result == expected)
+    }
 }
