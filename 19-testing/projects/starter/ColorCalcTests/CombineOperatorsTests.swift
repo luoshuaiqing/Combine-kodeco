@@ -123,4 +123,125 @@ class CombineOperatorsTests: XCTestCase {
         XCTAssert(results == expected, "Results expected to be \(expected) but were \(results)")
     }
     
+    func test_shareReplay1() {
+        // Given
+        let subject = PassthroughSubject<Int, Never>()
+        let publisher = subject.shareReplay(capacity: 2)
+        let expected = [0, 1, 2, 1, 2, 3, 3]
+        var results = [Int]()
+        
+        // When
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        subject.send(0)
+        subject.send(1)
+        subject.send(2)
+        
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        
+        subject.send(3)
+        
+        // Then
+        XCTAssert(
+          results == expected,
+          "Results expected to be \(expected) but were \(results)"
+        )
+    }
+    
+    func test_shareReplay2() {
+        // Given
+        let subject = CurrentValueSubject<Int, Never>(-1)
+        let publisher = subject.shareReplay(capacity: 2)
+        let expected = [-1, 0, -1, 0, 3, 3]
+        var results = [Int]()
+        
+        // When
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        subject.send(0)
+        
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        
+        subject.send(3)
+        
+        // Then
+        XCTAssert(
+          results == expected,
+          "Results expected to be \(expected) but were \(results)"
+        )
+    }
+    
+    func test_shareReplay3() {
+        // Given
+        let subject = CurrentValueSubject<Int, Never>(-1)
+        let publisher = subject.shareReplay()
+        let expected = [-1, -1, 3, 3]
+        var results = [Int]()
+        
+        // When
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        
+        subject.send(3)
+        
+        // Then
+        XCTAssert(
+          results == expected,
+          "Results expected to be \(expected) but were \(results)"
+        )
+    }
+    
+    func test_shareReplay4() {
+        // Given
+        let subject = CurrentValueSubject<Int, Never>(-1)
+        let publisher = subject.shareReplay(capacity: 2)
+        let expected = [-1, 0, -1, 0]
+        var results = [Int]()
+        
+        // When
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        
+        subject.send(0)
+        subject.send(completion: .finished)
+        
+        publisher
+            .sink {
+                results.append($0)
+            }
+            .store(in: &subscriptions)
+        
+        // Then
+        XCTAssert(
+          results == expected,
+          "Results expected to be \(expected) but were \(results)"
+        )
+    }
+    
 }
