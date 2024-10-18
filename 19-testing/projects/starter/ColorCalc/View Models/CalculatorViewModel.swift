@@ -107,7 +107,7 @@ final class CalculatorViewModel: ObservableObject {
             .share()
         
         colorValuesShared
-            .map { $0 != nil ? Color(values: $0!) : .red }
+            .map { $0 != nil ? Color(values: $0!) : .white }
             .assign(to: &$color)
         
         colorValuesShared

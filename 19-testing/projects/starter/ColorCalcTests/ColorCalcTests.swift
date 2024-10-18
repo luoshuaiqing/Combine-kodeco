@@ -80,6 +80,32 @@ class ColorCalcTests: XCTestCase {
     }
     
     func test_correctColorReceived() {
+        let expected = Color(hex: ColorName.rwGreen.rawValue)!
+        var result = Color.clear
         
+        viewModel.$color
+            .sink {
+                result = $0
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.hexText = ColorName.rwGreen.rawValue
+        
+        XCTAssert(result == expected)
+    }
+    
+    func test_processBackspaceReceivesCorrectColor() {
+        let expected = Color.white
+        var result = Color.clear
+        
+        viewModel.$color
+            .sink {
+                result = $0
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.process(CalculatorViewModel.Constant.backspace)
+        
+        XCTAssert(result == expected)
     }
 }
