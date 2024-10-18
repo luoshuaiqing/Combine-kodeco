@@ -122,4 +122,20 @@ class ColorCalcTests: XCTestCase {
         
         XCTAssert(result == expected)
     }
+    
+    func test_processClearSetsHexToHashtag() {
+        let expected = "#"
+        var result = ""
+        
+        viewModel.$hexText
+            .dropFirst()
+            .sink {
+                result = $0
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.process(CalculatorViewModel.Constant.clear)
+        
+        XCTAssert(result == expected)
+    }
 }
