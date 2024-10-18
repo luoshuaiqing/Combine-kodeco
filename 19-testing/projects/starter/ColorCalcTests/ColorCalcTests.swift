@@ -138,4 +138,19 @@ class ColorCalcTests: XCTestCase {
         
         XCTAssert(result == expected)
     }
+    
+    func test_correctRGBOTextReceived() {
+        let expected = "0, 102, 54, 170"
+        var result = ""
+        
+        viewModel.$rgboText
+            .sink {
+                result = $0
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.hexText = "#006636AA"
+        
+        XCTAssert(result == expected)
+    }
 }
