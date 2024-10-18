@@ -64,7 +64,7 @@ class ColorCalcTests: XCTestCase {
     }
     
     func test_processBackspaceDeletesLastCharacter() {
-        let expected = "0080F"
+        let expected = "#0080F"
         var result = ""
         
         viewModel.$hexText
@@ -77,5 +77,9 @@ class ColorCalcTests: XCTestCase {
         viewModel.process(CalculatorViewModel.Constant.backspace)
         
         XCTAssert(result == expected)
+    }
+    
+    func test_correctColorReceived() {
+        
     }
 }
