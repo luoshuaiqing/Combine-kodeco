@@ -34,6 +34,7 @@ import UIKit
 import Combine
 import SwiftUI
 
+@Observable
 public final class JokesViewModel {
     public enum DecisionState {
         case disliked, undecided, liked
@@ -41,10 +42,10 @@ public final class JokesViewModel {
     
     private static let decoder = JSONDecoder()
     
-    @Published public var fetching = false
-    @Published public var joke = Joke.starter
-    @Published public var backgroundColor = Color("Gray")
-    @Published public var decisionState = DecisionState.undecided
+    @ObservationIgnored @Published public var fetching = false
+    @ObservationIgnored @Published public var joke = Joke.starter
+    public var backgroundColor = Color("Gray")
+    public var decisionState = DecisionState.undecided
     
     private let jokesService: JokeServiceDataPublisher
     
