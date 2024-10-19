@@ -40,13 +40,22 @@ public final class JokesViewModel {
     }
     
     private static let decoder = JSONDecoder()
+    
     @Published public var fetching = false
     @Published public var joke = Joke.starter
     @Published public var backgroundColor = Color.gray
     @Published public var decisionState = DecisionState.undecided
     
-    public init(jokesService: JokeServiceDataPublisher? = nil) {
+    private let jokesService: JokeServiceDataPublisher
+    
+    public init(jokesService: JokeServiceDataPublisher = JokesService()) {
+        self.jokesService = jokesService
         
+        $joke
+            .map { _ in
+                 false
+            }
+            .assign(to: &$fetching)
     }
     
     public func fetchJoke() {
