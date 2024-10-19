@@ -40,8 +40,10 @@ public final class JokesViewModel {
     }
     
     private static let decoder = JSONDecoder()
-    
-    
+    @Published public var fetching = false
+    @Published public var joke = Joke.starter
+    @Published public var backgroundColor = Color.gray
+    @Published public var decisionState = DecisionState.undecided
     
     public init(jokesService: JokeServiceDataPublisher? = nil) {
         
