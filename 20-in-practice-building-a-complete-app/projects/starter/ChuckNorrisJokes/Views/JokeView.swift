@@ -78,6 +78,8 @@ struct JokeView: View {
         })
     }
     
+    private var viewModel = JokesViewModel()
+    
     @State private var showJokeView = false
     @State private var showFetchingJoke = false
     @State private var cardTranslation: CGSize = .zero
@@ -89,8 +91,8 @@ struct JokeView: View {
     private var circleDiameter: CGFloat { bounds.width * 0.9 }
     
     private var jokeCardView: some View {
-        JokeCardView()
-            .background(Color.white)
+        JokeCardView(viewModel: viewModel)
+            .background(viewModel.backgroundColor)
             .cornerRadius(20)
             .shadow(radius: 10)
             .rotationEffect(rotationAngle)
