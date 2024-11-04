@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5875D9412CCDAC7800AFAC06 /* JokeManagedObject+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5875D9402CCDAC7800AFAC06 /* JokeManagedObject+.swift */; };
 		D228A084231334E200EB6975 /* MockJokesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D228A083231334E200EB6975 /* MockJokesService.swift */; };
 		D228A08623134C6E00EB6975 /* TestJoke.json in Resources */ = {isa = PBXBuildFile; fileRef = D228A08523134B3B00EB6975 /* TestJoke.json */; };
 		D23410E22316ADD800BD8BA7 /* ChuckNorrisJokesModel.h in Headers */ = {isa = PBXBuildFile; fileRef = D23410E02316ADD800BD8BA7 /* ChuckNorrisJokesModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -65,6 +66,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5875D9402CCDAC7800AFAC06 /* JokeManagedObject+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JokeManagedObject+.swift"; sourceTree = "<group>"; };
 		D228A083231334E200EB6975 /* MockJokesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockJokesService.swift; sourceTree = "<group>"; };
 		D228A08523134B3B00EB6975 /* TestJoke.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = TestJoke.json; sourceTree = "<group>"; };
 		D23410DE2316ADD800BD8BA7 /* ChuckNorrisJokesModel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ChuckNorrisJokesModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -254,6 +256,7 @@
 			isa = PBXGroup;
 			children = (
 				D28F40B523537953009EE25E /* ChuckNorrisJokes.xcdatamodeld */,
+				5875D9402CCDAC7800AFAC06 /* JokeManagedObject+.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -462,6 +465,7 @@
 				D2568BB6230AEB6A00FFB4E3 /* HUDView.swift in Sources */,
 				D2E94672230B53020012CFFB /* JokeCardView.swift in Sources */,
 				D2568B7D230AE10300FFB4E3 /* AppDelegate.swift in Sources */,
+				5875D9412CCDAC7800AFAC06 /* JokeManagedObject+.swift in Sources */,
 				D2568BB0230AEAA600FFB4E3 /* ChuckNorrisJokesStyleKit.swift in Sources */,
 				D2E94671230B53020012CFFB /* JokeView.swift in Sources */,
 				D2568B7F230AE10300FFB4E3 /* SceneDelegate.swift in Sources */,
@@ -687,7 +691,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "ChuckNorrisJokes/Preview\\ Content";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7655W2DD35;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = ChuckNorrisJokes/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
@@ -711,7 +715,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "ChuckNorrisJokes/Preview\\ Content";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7655W2DD35;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = ChuckNorrisJokes/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
