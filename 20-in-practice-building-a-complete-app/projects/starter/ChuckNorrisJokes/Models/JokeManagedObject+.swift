@@ -14,7 +14,7 @@ import ChuckNorrisJokesModel
 extension JokeManagedObject {
     static func save(joke: Joke, inViewContext viewContext: NSManagedObjectContext) {
         guard joke.id != "error" else { return }
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: JokeManagedObject.self)) // todo: does entityName matter?
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: JokeManagedObject.self))
         fetchRequest.predicate = NSPredicate(format: "id = %@", joke.id)
         
         if let results = try? viewContext.fetch(fetchRequest),
