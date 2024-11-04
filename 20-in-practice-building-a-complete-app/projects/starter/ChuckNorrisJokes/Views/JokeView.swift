@@ -41,11 +41,15 @@ struct JokeView: View {
                     Spacer()
                     
                     LargeInlineButton(title: "Show Saved") {
-                        
+                        self.presentSavedJokes = true
                     }
                     .padding(20)
                 }
                 .navigationBarTitle("Chuck Norris Jokes")
+            }
+            .sheet(isPresented: $presentSavedJokes) {
+                SavedJokesView()
+                    .environment(\.managedObjectContext, self.viewContext)
             }
             
             HStack {
@@ -79,6 +83,8 @@ struct JokeView: View {
     }
     
     private var viewModel = JokesViewModel()
+    
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State private var showJokeView = false
     @State private var showFetchingJoke = false
@@ -131,6 +137,10 @@ struct JokeView: View {
             cardTranslation = .zero
             self.viewModel.reset()
         default:
+            if decisionState == .liked {
+                JokeManagedObject.save(joke: viewModel.joke, inViewContext: viewContext)
+            }
+            
             let translation = change.translation
             let offset = (decisionState == .liked ? 2 : -2) * bounds.width
             cardTranslation = CGSize(width: translation.width + offset, height: translation.height)
