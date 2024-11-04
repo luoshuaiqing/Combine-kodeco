@@ -34,27 +34,34 @@ import SwiftUI
 import ChuckNorrisJokesModel
 
 struct SavedJokesView: View {
-  var body: some View {
-    VStack {
-      NavigationView {
-        List {
-          ForEach(jokes, id: \.self) { joke in
-            Text(joke)
-          }
-          .onDelete { indices in
-            
-          }
+    var body: some View {
+        VStack {
+            NavigationView {
+                List {
+                    ForEach(jokes, id: \.self) { joke in
+                        Text(joke.value ?? "N/A")
+                    }
+                    .onDelete { indices in
+                        jokes.delete(at: indices, inViewContext: viewContext)
+                    }
+                }
+                .navigationBarTitle("Saved Jokes")
+            }
         }
-        .navigationBarTitle("Saved Jokes")
-      }
     }
-  }
     
-  private var jokes = [String]()
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @FetchRequest(
+        sortDescriptors: [
+            NSSortDescriptor(keyPath: \JokeManagedObject.value, ascending: true)
+        ],
+        animation: .default
+    ) private var jokes: FetchedResults<JokeManagedObject>
 }
 
 struct SavedJokesView_Previews: PreviewProvider {
-  static var previews: some View {
-    SavedJokesView()
-  }
+    static var previews: some View {
+        SavedJokesView()
+    }
 }

@@ -29,7 +29,7 @@ extension JokeManagedObject {
         }
         
         do {
-            try viewContext.save() // todo: do I have to save it?
+            try viewContext.save()
         } catch {
             fatalError()
         }
