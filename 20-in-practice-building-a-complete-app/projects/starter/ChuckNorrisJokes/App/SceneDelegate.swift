@@ -68,7 +68,7 @@ private enum CoreDataStack {
                 fatalError()
             }
         }
-        return viewContext
+        return container.viewContext
     }()
     
     static func save() {
