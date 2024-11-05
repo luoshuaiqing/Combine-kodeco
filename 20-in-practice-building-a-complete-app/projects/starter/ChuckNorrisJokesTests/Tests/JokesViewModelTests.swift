@@ -56,7 +56,13 @@ final class JokesViewModelTests: XCTestCase {
         return (data, joke)
     }
     
+    private func mockJokesService(jokeError: Bool) -> JokeServiceDataPublisher {
+        MockJokesService(data: testJoke.data, error: error)
+    }
     
+    private func viewModel(withJokeError jokeError: Bool = false) -> JokesViewModel {
+        JokesViewModel(jokesService: mockJokesService(jokeError: jokeError))
+    }
     
     func test_createJokesWithSampleJokeData() {
         // Given
@@ -80,11 +86,23 @@ final class JokesViewModelTests: XCTestCase {
     
     func test_backgroundColorFor50TranslationPercentIsGreen() {
         // Given
+        let viewModel = viewModel()
+        let translationPercent = 0.5
+        let expected = Color("Green")
+        var result: Color = .clear
+        viewModel
+            .$backgroundColor
+            .sink { _ in
+                XCTFail()
+            } receiveValue: {
+                result = $0
+            }
         
         // When
+        viewModel.updateBackgroundColorForTranslation(translationPercent)
         
         // Then
-        
+        XCTAssertTrue(result == expected)
     }
     
     func test_decisionStateFor60TranslationPercentIsLiked() {
