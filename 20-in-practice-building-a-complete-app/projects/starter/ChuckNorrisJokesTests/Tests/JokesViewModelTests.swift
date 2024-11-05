@@ -97,6 +97,7 @@ final class JokesViewModelTests: XCTestCase {
             } receiveValue: {
                 result = $0
             }
+            .store(in: &subscriptions)
         
         // When
         viewModel.updateBackgroundColorForTranslation(translationPercent)
