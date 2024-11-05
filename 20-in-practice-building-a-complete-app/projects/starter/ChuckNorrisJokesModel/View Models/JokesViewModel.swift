@@ -45,7 +45,7 @@ public final class JokesViewModel {
     @ObservationIgnored @Published public var fetching = false
     @ObservationIgnored @Published public var joke = Joke.starter
     @ObservationIgnored @Published public var backgroundColor = Color("Gray")
-    public var decisionState = DecisionState.undecided
+    @ObservationIgnored @Published public var decisionState = DecisionState.undecided
     
     private let jokesService: JokeServiceDataPublisher
     

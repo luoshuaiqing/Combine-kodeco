@@ -108,11 +108,26 @@ final class JokesViewModelTests: XCTestCase {
     
     func test_decisionStateFor60TranslationPercentIsLiked() {
         // Given
+        let viewModel = viewModel()
+        let translationPercent = 0.6
+        let bounds = CGRect(x: 0, y: 0, width: 414, height: 896)
+        let x = bounds.width
+        let expected: JokesViewModel.DecisionState = .liked
+        var result: JokesViewModel.DecisionState = .undecided
+        viewModel
+            .$decisionState
+            .sink { _ in
+                XCTFail()
+            } receiveValue: {
+                result = $0
+            }
+            .store(in: &subscriptions)
         
         // When
+        viewModel.updateDecisionStateForTranslation(translationPercent, andPredictedEndLocationX: x, inBounds: bounds)
         
         // Then
-        
+        XCTAssert(result == expected)
     }
     
     func test_decisionStateFor59TranslationPercentIsUndecided() {
